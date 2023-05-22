@@ -29,7 +29,7 @@ env:
 jobs:
   controller-test:
     runs-on: ubuntu-latest
-    if: ${{ github.repository_owner == 'cryostatio' }}
+    if: ${{ github.repository_owner == 'tthvo' }}
     steps:
     - name: Fail if safe-to-test label NOT applied
       if: ${{ github.event_name == 'pull_request_target' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
@@ -50,11 +50,10 @@ jobs:
       run: make test-envtest
   scorecard-test:
     runs-on: ubuntu-latest
-    if: ${{ github.repository_owner == 'cryostatio' }}
+    if: ${{ github.repository_owner == 'tthvo' }}
     env: 
       SCORECARD_NAMESPACE: cryostat-operator-scorecard
       SCORECARD_SA_NAME: cryostat-scorecard
-      IMAGE_TAG: ci-${{ env.$GITHUB_SHA }}
       GHCR_USERNAME: ${{ github.repository_owner }}
       GHCR_PASSWORD: ${{ secrets.GHCR_PR_TOKEN }}
       GHCR_SERVER: ghcr.io
@@ -69,26 +68,28 @@ jobs:
     - name: Build scorecard image for test
       id: build-scorecard
       run: |
-        make scorecard-build CUSTOM_SCORECARD_IMG=ghcr.io/${{ github.repository_owner }}/cryostat-operator-scorecard:$IMAGE_TAG
+        make scorecard-build CUSTOM_SCORECARD_IMG=ghcr.io/${{ github.repository_owner }}/cryostat-operator-scorecard:ci-$GITHUB_SHA
+        echo "tag=ci-$GITHUB_SHA" >> $GITHUB_OUTPUT
     - name: Push scorecard image to ghcr.io for test
       id: push-scorecard-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
         image: cryostat-operator-scorecard
-        tags: ${{ env.IMAGE_TAG }}
+        tags: ${{ steps.build-scorecard.outputs.tag }}
         registry: ghcr.io/${{ github.repository_owner }}
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GHCR_PR_TOKEN }}
     - name: Build bundle image for test
       id: build-bundle
       run: |
-        make bundle bundle-build BUNDLE_IMG=ghcr.io/${{ github.repository_owner }}/cryostat-operator-bundle:$IMAGE_TAG
+        make bundle bundle-build BUNDLE_IMG=ghcr.io/${{ github.repository_owner }}/cryostat-operator-bundle:ci-$GITHUB_SHA
+        echo "tag=ci-$GITHUB_SHA" >> $GITHUB_OUTPUT
     - name: Push bundle image to ghcr.io for test
       id: push-bundle-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
         image: cryostat-operator-bundle
-        tags: ${{ env.IMAGE_TAG }}
+        tags: ${{ steps.build-bundle.outputs.tag }}
         registry: ghcr.io/${{ github.repository_owner }}
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GHCR_PR_TOKEN }}
@@ -146,7 +147,7 @@ jobs:
       run: kind delete cluster -n ci-${{ github.repository_owner }}
   build-operator:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.repository_owner == 'cryostatio' }}
+    if: ${{ github.event_name == 'push' && github.repository_owner == 'tthvo' }}
     steps:
     - uses: actions/checkout@v2
     - name: Build operator image
@@ -176,7 +177,7 @@ jobs:
       run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
   build-bundle:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.repository_owner == 'cryostatio' }}
+    if: ${{ github.event_name == 'push' && github.repository_owner == 'tthvo' }}
     steps:
     - uses: actions/checkout@v2
     - name: Build bundle image
@@ -206,7 +207,7 @@ jobs:
       run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
   build-scorecard:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.repository_owner == 'cryostatio' }}
+    if: ${{ github.event_name == 'push' && github.repository_owner == 'tthvo' }}
     steps:
     - uses: actions/checkout@v2
     - name: Get scorecard image tag
