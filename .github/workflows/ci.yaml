@@ -135,6 +135,27 @@ jobs:
         make test-scorecard
     - name: Clean up Kind cluster 
       run: kind delete cluster -n ci-${{ github.run_id }}
+    - name: Clean up scorecard image
+      uses: bots-house/ghcr-delete-image-action@v1.1.0
+      with:
+        token: ${{ secrets.GHCR_PR_TOKEN }}
+        owner: ${{ github.repository_owner }}
+        name: cryostat-operator-scorecard
+        tag: ${{ steps.build-scorecard.outputs.tag }}
+    - name: Clean up bundle image
+      uses: bots-house/ghcr-delete-image-action@v1.1.0
+      with:
+        token: ${{ secrets.GHCR_PR_TOKEN }}
+        owner: ${{ github.repository_owner }}
+        name: cryostat-operator-bundle
+        tag: ${{ steps.build-bundle.outputs.tag }}
+    - name: Clean up operator image
+      uses: bots-house/ghcr-delete-image-action@v1.1.0
+      with:
+        token: ${{ secrets.GHCR_PR_TOKEN }}
+        owner: ${{ github.repository_owner }}
+        name: cryostat-operator
+        tag: ${{ steps.build-operator.outputs.tag }}
   build-operator:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.repository_owner == 'cryostatio' }}
