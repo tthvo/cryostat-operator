@@ -442,7 +442,7 @@ ifeq ($(IMAGE_BUILDER), docker)
 	- $(IMAGE_BUILDER) buildx build --push --platform=$(PLATFORMS) --tag $(CUSTOM_SCORECARD_IMG) -f internal/images/custom-scorecard-tests/Dockerfile.cross .
 	- $(IMAGE_BUILDER) buildx rm project-v3-builder
 else ifeq ($(IMAGE_BUILDER), podman)
-	BUILDAH_FORMAT=docker $(IMAGE_BUILDER) build -f internal/images/custom-scorecard-tests/Dockerfile.cross --manifest $(CUSTOM_SCORECARD_IMG) --platform $(PLATFORMS) . ; \
+	BUILDAH_FORMAT=docker $(IMAGE_BUILDER) build -f internal/images/custom-scorecard-tests/Dockerfile.cross --manifest $(CUSTOM_SCORECARD_IMG) --platform $(PLATFORMS) . ; echo something \
 	if [ "${MANIFEST_PUSH}" = "true" ] ; then \
 		$(IMAGE_BUILDER) manifest push $(CUSTOM_SCORECARD_IMG) $(CUSTOM_SCORECARD_IMG) ; \
 	fi
