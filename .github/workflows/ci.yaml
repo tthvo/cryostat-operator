@@ -229,11 +229,11 @@ jobs:
     # if: ${{ github.event_name == 'push' && github.repository_owner == 'cryostatio' }}
     steps:
     - uses: actions/checkout@v2
-    # - name: Get scorecard image tag
-    #   id: get-image-tag
-    #   run: |
-    #     SCORECARD_TAG=$(yq '[.stages[0].tests[].image | capture("cryostat-operator-scorecard:(?P<tag>[\w.\-_]+)$")][0].tag' bundle/tests/scorecard/config.yaml)
-    #     echo "tag=$SCORECARD_TAG" >> $GITHUB_OUTPUT
+    - name: Get scorecard image tag
+      id: get-image-tag
+      run: |
+        SCORECARD_TAG=$(yq '[.stages[0].tests[].image | capture("cryostat-operator-scorecard:(?P<tag>[\w.\-_]+)$")][0].tag' bundle/tests/scorecard/config.yaml)
+        echo "tag=$SCORECARD_TAG" >> $GITHUB_OUTPUT
     # - name: Check if scorecard image tag already exists
     #   id: check-tag-exists
     #   run: |
