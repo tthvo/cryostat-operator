@@ -40,7 +40,7 @@ env:
 jobs:
   get-test-image-tag:
     runs-on: ubuntu-latest
-    if: ${{ github.repository_owner == 'cryostatio' }}
+    # if: ${{ github.repository_owner == 'cryostatio' }}
     outputs:
       tag: ${{ steps.compute-tag.outputs.tag }}
     steps:
@@ -55,7 +55,7 @@ jobs:
   clean-up-test-images:
     runs-on: ubuntu-latest
     needs: [get-test-image-tag, scorecard-test]
-    if: github.repository_owner == 'cryostatio'
+    # if: github.repository_owner == 'cryostatio'
     strategy:
       matrix:
         image: [cryostat-operator, cryostat-operator-bundle, cryostat-operator-scorecard]
@@ -97,7 +97,7 @@ jobs:
     needs: [get-test-image-tag]
     env:
       TAG: ${{ needs.get-test-image-tag.outputs.tag }}
-    if: ${{ github.repository_owner == 'cryostatio' }}
+    # if: ${{ github.repository_owner == 'cryostatio' }}
     steps:
     - name: Fail if safe-to-test label NOT applied
       if: ${{ github.event_name == 'pull_request_target' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
