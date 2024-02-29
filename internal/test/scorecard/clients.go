@@ -267,7 +267,7 @@ func (client *TargetClient) Create(ctx context.Context, options *Target) (*Targe
 	}
 
 	targetResp := &CustomTargetResponse{}
-	err = ReadJSON(resp, &targetResp)
+	err = ReadJSON(resp, targetResp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %s", err.Error())
 	}
